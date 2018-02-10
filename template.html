@@ -272,8 +272,9 @@ function getImage(input){
           top = data;
       }
       var index = result.indexOf(top)
+      output = ans[index];
       document.getElementById('result').innerHTML = ans[index];
-      alert(ans[index]);
+      alert(output);
     }
     function getKeywords(){
       let question = document.getElementById('response').innerHTML;
