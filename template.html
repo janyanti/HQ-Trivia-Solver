@@ -262,8 +262,13 @@ function getImage(input){
       }
       var index = result.indexOf(top)
       var output = ans[index];
-      document.getElementById('result').innerHTML = output;
-      alert(output);
+      var badImage = "Invalid image for HQ Trivia"
+      document.getElementById('response').innerHTML = output;
+      if (output != undefined){
+        alert(output);
+      }
+      else
+        alert(badImage);
     }
     function getKeywords(){
       let question = document.getElementById('response').innerHTML;
