@@ -45,7 +45,7 @@
   .navbar-nav  li a:hover {
       color: #1abc9c !important;
   }
-    h1{
+    .h1{
       font-size: 30px;
       font-color: #000000;
     }
@@ -272,8 +272,8 @@ function getImage(input){
           top = data;
       }
       var index = result.indexOf(top)
-      output = ans[index];
-      document.getElementById('result').innerHTML = ans[index];
+      var output = ans[index];
+      document.getElementById('result').innerHTML = output;
       alert(output);
     }
     function getKeywords(){
