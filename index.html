@@ -1,120 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Theme Made By www.w3schools.com - No Copyright -->
-  <title>Bootstrap Theme Simply Me</title>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
+  <title>HTML5 Media Device Access</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <style>
     video, img {
       max-width:100%;
     }
-  body {
-     font: 20px Helvetica, serif;
-     line-height: 1.8;
-     background-image: url("https://www.qatar.cmu.edu/wp-content/uploads/2017/04/no-image-event.jpg");
-     background-repeat: repeat-y-x;
-  }
-  p {font-size: 16px;}
-  .margin {margin-bottom: 45px;}
-
-  .bg-3 {
-      background-color: #2f2f2f; /* Black Gray */
-      color: #fff;
-  }
-  .container-fluid {
-      padding-top: 70px;
-      padding-bottom: 70px;
-  }
-  .navbar {
-      padding-top: 15px;
-      padding-bottom: 15px;
-      border: 0;
-      border-radius: 0;
-      margin-bottom: 0;
-      font-size: 18px;
-      letter-spacing: 5px;
-  }
-  .navbar-nav  li a:hover {
-      color: #1abc9c !important;
-  }
   </style>
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-default">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Me</a>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#">WHO</a></li>
-        <li><a href="#">WHAT</a></li>
-        <li><a href="#">WHERE</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- First Container -->
-<div class="container-fluid bg-1 text-center" align ="center">
-  <h3 class="margin"><font size=30 color="White">CRACK HQ</font></h3>
-    <img id="output">
-    <div align="center">
-    <input id="file-input" type="file" accept="image/*" capture="environment">
-  </div>
-    <script>
-    function getImage(input){
-    console.log(input);
-    }
-    let fileReader = new FileReader();
-    const fileInput = document.getElementById('file-input');
-    fileInput.addEventListener('change', (e) => doSomethingWithFiles(e.target.files));
-    const output = document.getElementById('output');
-    function doSomethingWithFiles(fileList) {
-      console.log(fileList);
-      let file = null;
-      for (let i = 0; i < fileList.length; i++) {
-        if (fileList[i].type.match(/^image\//)) {
-          file = fileList[i];
-          break;
-        }
-      }
-      if (file !== null) {
-        fileName = URL.createObjectURL(file);
-        output.src = fileName;
-        fileReader.onload = (function(img){analyzeImage(fileReader.result)})
-        var imageOutput = fileReader.readAsDataURL(file);
-        console.log()
-        document.getElementById('result').innerHTML = fileName
-
-      }
-    }    
-</script>
-<!-- Second Container -->
-<video id="player" controls autoplay></video>
+<img id="output">
+<input id="file-input" type="file" accept="image/*" capture="environment">
 <script>
-  const player = document.getElementById('player');
+var bigData = []
 
-  const constraints = {
-    video: true,
-  };
+function getImage(input){
+  console.log(input);
+}
+  let fileReader = new FileReader();
+  const fileInput = document.getElementById('file-input');
 
-  navigator.mediaDevices.getUserMedia(constraints)
-    .then((stream) => {
-      player.srcObject = stream;
-    });
+  fileInput.addEventListener('change', (e) => doSomethingWithFiles(e.target.files));
+  const output = document.getElementById('output');
 
+  function doSomethingWithFiles(fileList) {
+    console.log(fileList);
+    let file = null;
+
+    for (let i = 0; i < fileList.length; i++) {
+      if (fileList[i].type.match(/^image\//)) {
+        file = fileList[i];
+        break;
+      }
+    }
+
+    if (file !== null) {
+      fileName = URL.createObjectURL(file);
+      output.src = fileName;
+      fileReader.onload = (function(img){analyzeImage(fileReader.result)})
+      var imageOutput = fileReader.readAsDataURL(file);
+      console.log()
+      document.getElementById('result').innerHTML = fileName
+    }
+  }
     function parseBlob(result){
       var BASE64_MARKER = ';base64,';
       var index = result.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
@@ -171,22 +101,100 @@
               if (text.includes('?')){
                 isQ = false;
               }
-              console.log(text);
-              console.log(question);
+              // console.log(text);
+              // console.log(question);
             }
             if (answer.length > 1 && answers.length < 3){
               answers.push(answer)
             }
             answer = '';
-
           }
           console.log(question)
           console.log(answers)
         document.getElementById('response').innerHTML = question;
 
         }
-        getKeywords();
+        function getKeywords(){
+          let question = document.getElementById('response').innerHTML;
+          console.log(question);
+          var data = JSON.stringify({
+            "documents": [
+              {
+                "language": "en",
+                "id": "1",
+                "text": question
+              }
+            ]
+          });
+
+          var xhr = new XMLHttpRequest();
+          xhr.withCredentials = true;
+
+          xhr.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+              console.log(this.responseText);
+            }
+          });
+
+          xhr.open("POST", "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases", false);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.setRequestHeader("Ocp-Apim-Subscription-Key", "ed2bf25752014809b470042b66adc5e8");
+          xhr.setRequestHeader("Accept", "application/json");
+          xhr.withCredentials = false;
+          xhr.onload = function(event){getScore(answers, parseKeys(JSON.parse(event.currentTarget.response).documents))};
+          xhr.send(data);
+
+          function parseKeys(data){
+            console.log(data)
+            keys = data[0]["keyPhrases"];
+            console.log(keys);
+            return keys;
+          }
+        }
+        var keywords = getKeywords();
+        console.log('we made it')
+        getScore(answers, keywords);
       };
+    }
+    function getScore(data, keywords){
+      console.log(keywords)
+      result = [];
+      var len = data.length;
+      var keyLen = keywords.length;
+      for (var i = 0; i < len; i++ ){
+        var score = 0
+        for (var j = 0; j < keyLen; j++){
+          searchTerm(keywords[j], data[i]);
+          var add = bigData.pop();
+          score += add
+        }
+        console.log(score)
+        console.log('Hi')
+        result.push(score);
+      }
+      function searchTerm(keyword,answer){
+        var searchString = answer + keyword
+        var xhr = new XMLHttpRequest();
+        xhr.withCredentials = true;
+
+        xhr.addEventListener("readystatechange", function () {
+          if (this.readyState === 4) {
+            console.log(JSON.parse(this.responseText).webPages.totalEstimatedMatches);
+          }
+        });
+
+        xhr.open("GET", "https://api.cognitive.microsoft.com/bing/v7.0/search?q="+searchString, false);
+        xhr.setRequestHeader("Ocp-Apim-Subscription-Key", "9455d94a3c324b0ebb9a15d65d6f7f7d");
+        xhr.withCredentials = false;
+        xhr.onload = function(event){getConfidence(JSON.parse(event.currentTarget.response).webPages.totalEstimatedMatches)};
+        xhr.send();
+
+        function getConfidence(data){
+            bigData.push(data);
+        }
+
+      }
+      console.log(result);
     }
     function getKeywords(){
       let question = document.getElementById('response').innerHTML;
@@ -210,52 +218,36 @@
         }
       });
 
-      xhr.open("POST", "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases");
+      xhr.open("POST", "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases", false);
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("Ocp-Apim-Subscription-Key", "ed2bf25752014809b470042b66adc5e8");
       xhr.setRequestHeader("Accept", "application/json");
       xhr.withCredentials = false;
-      xhr.onload = function(event){parseKeys(JSON.parse(event.currentTarget.response).documents)};
+      xhr.onload = function(event){return parseKeys(JSON.parse(event.currentTarget.response).documents)};
       xhr.send(data);
 
       function parseKeys(data){
         console.log(data)
         keys = data[0]["keyPhrases"];
         console.log(keys);
+        return keys;
       }
     }
 
+
 </script>
 <script>
-  // function getKeywords(){
-  //   let question = document.getElementById('result').innerHTML;
-  //   var data = JSON.stringify({
-  //     "documents": [
-  //       {
-  //         "language": "en",
-  //         "id": "1",
-  //         "text": question
-  //       }
-  //     ]
-  //   });
-  //
-  //   var xhr = new XMLHttpRequest();
-  //   xhr.withCredentials = true;
-  //
-  //   xhr.addEventListener("readystatechange", function () {
-  //     if (this.readyState === 4) {
-  //       console.log(this.responseText);
-  //     }
-  //   });
-  //
-  //   xhr.open("POST", "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases");
-  //   xhr.setRequestHeader("Content-Type", "application/json");
-  //   xhr.setRequestHeader("Ocp-Apim-Subscription-Key", "ed2bf25752014809b470042b66adc5e8");
-  //   xhr.setRequestHeader("Accept", "application/json");
-  //   xhr.onload = function(event){console.log('hi' + event.currentTarget)};
-  //   xhr.send(data);
-  // }
+  function getScore(data, keywords){
+    result = []
+    for (var i = 0; i < data.length; i++ ){
+      score = 0
+      for (var j = 0; j < keywords.length, j++){
+        score += 1;
+      }
+      result.push(score);
+    }
 
+  }
 </script>
 <p id="response">Send Help</p>
 <p id="result">Result<p>
