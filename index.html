@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Media Device Access</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    video, img {
+      max-width:100%;
+    }
+  </style>
+</head>
+<body>
+<img id="output">
+<input id="file-input" type="file" accept="image/*" capture="environment">
+<script>
+function getImage(input){
+  console.log(input);
+}
+  let fileReader = new FileReader();
+  const fileInput = document.getElementById('file-input');
+
+  fileInput.addEventListener('change', (e) => doSomethingWithFiles(e.target.files));
+  const output = document.getElementById('output');
+
+  function doSomethingWithFiles(fileList) {
+    console.log(fileList);
+    let file = null;
+
+    for (let i = 0; i < fileList.length; i++) {
+      if (fileList[i].type.match(/^image\//)) {
+        file = fileList[i];
+        break;
+      }
+    }
+
+    if (file !== null) {
+      fileName = URL.createObjectURL(file);
+      output.src = fileName;
+      fileReader.onload = (function(img){analyzeImage(fileReader.result)})
+      var imageOutput = fileReader.readAsDataURL(file);
+      console.log()
+      document.getElementById('result').innerHTML = fileName
+    }
+  }
+</script>
+<video id="player" controls autoplay></video>
+<script>
+  const player = document.getElementById('player');
+
+  const constraints = {
+    video: true,
+  };
+
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then((stream) => {
+      player.srcObject = stream;
+    });
+
+    function parseBlob(result){
+      var BASE64_MARKER = ';base64,';
+      var index = result.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+      return result.substring(index);
+    }
+    analyzeImage = (result) => {
+      const imageUrl = parseBlob(result);
+      let uriBase = 'https://eastus.api.cognitive.microsoft.com/vision/v1.0/ocr';
+
+      function blob (data){
+        var raw = window.atob(data);
+        var rawLength = raw.length;
+
+        var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+        for(var i = 0; i < rawLength; i++){
+          array[i] = raw.charCodeAt(i);
+        }
+        var result = new Blob([array], {type: 'application/octet-stream'});
+        return result
+      }
+
+      let imageBlob = blob(imageUrl);
+      //
+      // function callback(error, response, body) {
+      //   console.log('Callback');
+      //   if (!error && response.statusCode === 200) {
+      //     var info = JSON.parse(body);
+      //     console.log(info);
+      //   }
+      // }
+      // request(options, function (error, response, body) {
+      //   if (error) throw new Error(error);
+      //   console.log(body);
+      //   var data = body.regions;
+      //   console.log(data);
+      //   getWords(data);
+      //   document.getElementById("response").innerHTML = JSON.stringify(body.regions);
+      // });
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function(event){process(JSON.parse(event.currentTarget.response).regions)};
+      xhr.open('POST', uriBase);
+      xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+      xhr.setRequestHeader('Ocp-Apim-Subscription-Key', "3527db30b963419cabf331fb70b4fa51");
+      xhr.send(imageBlob);
+
+      function process(data){
+        getWords(data);
+      }
+
+      var question = '';
+      var answer = '';
+      var answers = [];
+      var isQ = true;
+      function getWords(data){
+        for(var i = 0; i < data.length; i++)
+        {
+          var part = data[i]['lines'];
+          for (var j = 0; j < part.length; j++)
+          {
+            var word = part[j]['words'];
+            for (var k = 0; k < word.length; k++){
+              var text = word[k]['text'];
+              if (isQ){
+                question += text + " "
+              }
+              else{
+                answer += text +" "
+              }
+              if (text.includes('?')){
+                isQ = false;
+              }
+              console.log(text);
+              console.log(question);
+            }
+            if (answer.length > 1 && answers.length < 3){
+              answers.push(answer)
+            }
+            answer = '';
+
+          }
+          console.log(question)
+          console.log(answers)
+        document.getElementById('response').innerHTML = question;
+        }
+      };
+    }
+
+</script>
+<p id="response">Send Help</p>
+<p id="result">Result<p>
+</body>
+</html>
