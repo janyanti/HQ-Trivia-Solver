@@ -80,22 +80,6 @@ function getImage(input){
       }
 
       let imageBlob = blob(imageUrl);
-      //
-      // function callback(error, response, body) {
-      //   console.log('Callback');
-      //   if (!error && response.statusCode === 200) {
-      //     var info = JSON.parse(body);
-      //     console.log(info);
-      //   }
-      // }
-      // request(options, function (error, response, body) {
-      //   if (error) throw new Error(error);
-      //   console.log(body);
-      //   var data = body.regions;
-      //   console.log(data);
-      //   getWords(data);
-      //   document.getElementById("response").innerHTML = JSON.stringify(body.regions);
-      // });
       var xhr = new XMLHttpRequest();
       xhr.onload = function(event){process(JSON.parse(event.currentTarget.response).regions)};
       xhr.open('POST', uriBase);
@@ -141,12 +125,83 @@ function getImage(input){
           console.log(question)
           console.log(answers)
         document.getElementById('response').innerHTML = question;
+
         }
+        getKeywords();
       };
     }
+    function getKeywords(){
+      let question = document.getElementById('response').innerHTML;
+      console.log(question);
+      var data = JSON.stringify({
+        "documents": [
+          {
+            "language": "en",
+            "id": "1",
+            "text": question
+          }
+        ]
+      });
+
+      var xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+
+      xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+          console.log(this.responseText);
+        }
+      });
+
+      xhr.open("POST", "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Ocp-Apim-Subscription-Key", "ed2bf25752014809b470042b66adc5e8");
+      xhr.setRequestHeader("Accept", "application/json");
+      xhr.withCredentials = false;
+      xhr.onload = function(event){parseKeys(JSON.parse(event.currentTarget.response).documents)};
+      xhr.send(data);
+
+      function parseKeys(data){
+        console.log(data)
+        keys = data[0]["keyPhrases"];
+        console.log(keys);
+      }
+    }
+
+</script>
+<script>
+  // function getKeywords(){
+  //   let question = document.getElementById('result').innerHTML;
+  //   var data = JSON.stringify({
+  //     "documents": [
+  //       {
+  //         "language": "en",
+  //         "id": "1",
+  //         "text": question
+  //       }
+  //     ]
+  //   });
+  //
+  //   var xhr = new XMLHttpRequest();
+  //   xhr.withCredentials = true;
+  //
+  //   xhr.addEventListener("readystatechange", function () {
+  //     if (this.readyState === 4) {
+  //       console.log(this.responseText);
+  //     }
+  //   });
+  //
+  //   xhr.open("POST", "https://eastus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases");
+  //   xhr.setRequestHeader("Content-Type", "application/json");
+  //   xhr.setRequestHeader("Ocp-Apim-Subscription-Key", "ed2bf25752014809b470042b66adc5e8");
+  //   xhr.setRequestHeader("Accept", "application/json");
+  //   xhr.onload = function(event){console.log('hi' + event.currentTarget)};
+  //   xhr.send(data);
+  // }
 
 </script>
 <p id="response">Send Help</p>
 <p id="result">Result<p>
+<!-- <p id='questions'> Hello<p> -->
+<h1 id="keyWords"> KeyWords </h1>
 </body>
 </html>
