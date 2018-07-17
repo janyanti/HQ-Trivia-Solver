@@ -80,7 +80,10 @@ function getImage(input){
   let fileReader = new FileReader();
   const fileInput = document.getElementById('file-input');
 
-  fileInput.addEventListener('change', (e) => doSomethingWithFiles(e.target.files));
+  fileInput.addEventListener('change', (e) => {
+    console.log(e);
+    doSomethingWithFiles(e.target.files)
+    });
   const output = document.getElementById('output');
 
   function doSomethingWithFiles(fileList) {
