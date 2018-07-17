@@ -110,7 +110,7 @@ function getImage(input){
     }
     analyzeImage = (result) => {
       const imageUrl = parseBlob(result);
-      let uriBase = 'https://eastus.api.cognitive.microsoft.com/vision/v1.0/ocr';
+      let uriBase = 'https://westcentralus.api.cognitive.microsoft.com/vision/v2.0/ocr';
 
       function blob (data){
         var raw = window.atob(data);
@@ -130,7 +130,7 @@ function getImage(input){
       xhr.onload = function(event){process(JSON.parse(event.currentTarget.response).regions)};
       xhr.open('POST', uriBase);
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
-      xhr.setRequestHeader('Ocp-Apim-Subscription-Key', "3527db30b963419cabf331fb70b4fa51");
+      xhr.setRequestHeader('Ocp-Apim-Subscription-Key', "8242d739f9234a3784c5750b1bb56a4c");
       xhr.send(imageBlob);
 
       function process(data){
